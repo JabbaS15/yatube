@@ -1,0 +1,34 @@
+{% load thumbnail %}
+<article>
+  <div class="page-item">
+    <ul>
+      <li>
+        Автор: <a title='Все посты пользователя' href={% url 'posts:profile' post.author %}>{{ post.author }}</a>
+      </li>
+      <li>
+        Дата публикации: {{ post.pub_date|date:"d E Y" }}
+      </li>
+    </ul>
+    {% thumbnail post.image "960x339" crop="center" upscale=True as im %}
+      <img class="card-img my-2" src="{{ im.url }}">
+    {% endthumbnail %}
+    <p>{{ post.text|linebreaksbr }}</p>
+    <a href="{% url 'posts:post_detail' post.pk %}">
+      Подробная информация
+    </a>
+    {% url 'posts:group_list' post.group.slug as home_url %}
+    {% if not request.path == home_url %}
+      {% if post.group %}
+        <br>
+        <a href="{% url 'posts:group_list' post.group.slug %}">Все записи группы</a>
+        <br>
+      {% else %}
+        <p class="link-warning" style="color: red">У поста нет группы</p>
+      {% endif %}
+    {% endif %}
+
+    {% if not forloop.last %}
+      <hr>
+    {% endif %}
+  </div>
+</article>
