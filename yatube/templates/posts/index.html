@@ -5,7 +5,6 @@
   <div class="container py-5">
     {% include 'includes/switcher.html' %}
     <h1>Последние обновления на сайте</h1>
-    <br>
     {% for post in page_obj %}
       {% include 'includes/post_block.html' %}
     {% endfor %}

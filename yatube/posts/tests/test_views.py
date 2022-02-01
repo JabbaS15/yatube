@@ -4,6 +4,7 @@ import tempfile
 from django.conf import settings
 from django.core.cache import cache
 from django.core.files.uploadedfile import SimpleUploadedFile
+from django.db import IntegrityError
 from django.test import Client, TestCase, override_settings
 from django.urls import reverse
 from django import forms
@@ -52,7 +53,6 @@ class PostCreateModule(TestCase):
             text='Текст поста больше 15 символов для контроля проверки',
             group=cls.group,
             image=cls.uploaded_image,
-
         )
 
     def setUp(self):
@@ -202,17 +202,25 @@ class PostsPagesTest(PostCreateModule):
             ).exists()
         )
 
+    def test_cache_index_page(self):
+        """"Тестирование кэша на главной странице"""
+        cache_1 = self.guest_client.get('/').content
+        Post.objects.create(
+            text='test_cache',
+            author=self.user
+        )
+        cache_2 = self.guest_client.get('/').content
+        self.assertEqual(cache_1, cache_2)
+        cache.clear()
+        self.assertNotEqual(
+            cache_2, self.guest_client.get('/').content
+        )
+
     def test_follow(self):
         """"Проверка подписки на автора"""
         user_follow = Follow.objects.count()
-        from_data = {
-            'user': self.user,
-            'author': self.user_2,
-        }
         response = self.authorized_client.post(
             reverse('posts:profile_follow', kwargs={'username': self.user_2}),
-            data=from_data,
-            follow=True
         )
         self.assertRedirects(response, reverse('posts:follow_index'))
         self.assertEqual(Follow.objects.count(), user_follow + 1)
@@ -229,15 +237,9 @@ class PostsPagesTest(PostCreateModule):
             user=self.user,
             author=self.user_2,
         )
-        from_data = {
-            'user': self.user,
-            'author': self.user_2,
-        }
         response = self.authorized_client.post(
             reverse(
                 'posts:profile_unfollow', kwargs={'username': self.user_2}),
-            data=from_data,
-            follow=True
         )
         self.assertRedirects(response, reverse('posts:follow_index'))
         self.assertEqual(Follow.objects.count(), 0)
@@ -256,14 +258,33 @@ class PostsPagesTest(PostCreateModule):
         )
         post_user_2 = Post.objects.create(
             author=self.user_2,
-            text='test follow',
+            text='test_follow_context',
             group=self.group,
         )
-
         response = self.authorized_client.get(reverse('posts:follow_index'))
         context_objects = response.context['page_obj']
         self.assertIn(post_user_2, context_objects)
-        self.assertNotIn(self.post, context_objects)
+
+    def test_not_follow_context(self):
+        """"Проверка отсутствия постов чужих авторов в ленте подписчика"""
+        post_user_2 = Post.objects.create(
+            author=self.user_2,
+            text='test_not_follow_context',
+            group=self.group,
+        )
+        response = self.authorized_client.get(reverse('posts:follow_index'))
+        context_objects = response.context['page_obj']
+        self.assertFalse(Follow.objects.filter(
+            user=self.user,
+            author=self.user_2,
+        ).exists())
+        self.assertNotIn(post_user_2, context_objects)
+
+    def test_no_self_follow(self):
+        """"Проверка подписки на себя"""
+        constraint_name = "prevent_self_follow"
+        with self.assertRaisesMessage(IntegrityError, constraint_name):
+            Follow.objects.create(user=self.user, author=self.user)
 
 
 class PaginatorViewsTest(PostCreateModule):

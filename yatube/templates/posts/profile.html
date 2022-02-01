@@ -6,22 +6,24 @@
   <div class="container py-5">
     <h1>Все посты пользователя {{ author.username }}</h1>
     <h3>Всего постов: {{ author.posts.count }} </h3>
-    {% if user.is_authenticated and author != request.user%}
-      {% if following %}
-        <a
-            class="btn btn-lg btn-light"
-            href="{% url 'posts:profile_unfollow' author.username %}" role="button"
-        >
-          Отписаться
-        </a>
-      {% else %}
-        <a
-            class="btn btn-lg btn-dark text-warning"
-            href="{% url 'posts:profile_follow' author.username %}" role="button"
-        >
-          Подписаться
-        </a>
-      {% endif %}
+    {% if user.is_authenticated and request.user != author %}
+      <div class="container py-1">
+        {% if following %} {#Так я же и не показываю, вот выше условие request.user != author#}
+          <a
+              class="btn btn-lg btn-primary"
+              href="{% url 'posts:profile_unfollow' author.username %}" role="button"
+          >
+            Отписаться
+          </a>
+        {% else %}
+          <a
+              class="btn btn-lg btn-dark"
+              href="{% url 'posts:profile_follow' author.username %}" role="button"
+          >
+            Подписаться
+          </a>
+        {% endif %}
+      </div>
     {% endif %}
     {% for post in page_obj %}
       {% include 'includes/post_block.html' %}
