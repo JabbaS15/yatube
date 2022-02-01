@@ -1,5 +1,4 @@
 from django.contrib.auth import get_user_model
-from django.core.exceptions import ValidationError
 from django.db import models
 
 from core.models import CreatedModel
@@ -100,11 +99,6 @@ class Follow(models.Model):
                 name="prevent_self_following",
             ),
         ]
-
-    # def clean(self):
-    #     if Follow.user == Follow.author:
-    #         raise ValidationError(f'Пользователь {Follow.user} '
-    #                               f'не может подписаться на {Follow.author}')
 
     def __str__(self):
         return self.author
