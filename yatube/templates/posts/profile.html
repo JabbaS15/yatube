@@ -8,7 +8,7 @@
     <h3>Всего постов: {{ author.posts.count }} </h3>
     {% if user.is_authenticated and request.user != author %}
       <div class="container py-1">
-        {% if following %} {#Так я же и не показываю, вот выше условие request.user != author#}
+        {% if following %}
           <a
               class="btn btn-lg btn-primary"
               href="{% url 'posts:profile_unfollow' author.username %}" role="button"

@@ -204,17 +204,26 @@ class PostsPagesTest(PostCreateModule):
 
     def test_cache_index_page(self):
         """"Тестирование кэша на главной странице"""
-        cache_1 = self.guest_client.get('/').content
-        Post.objects.create(
+        cache_post = Post.objects.create(
             text='test_cache',
-            author=self.user
+            author=self.user,
         )
-        cache_2 = self.guest_client.get('/').content
-        self.assertEqual(cache_1, cache_2)
+        index = reverse('posts:index')
+        cache_1 = self.guest_client.get(index).content
+        cache_post.delete()
+        self.assertEqual(cache_1, self.guest_client.get(index).content)
+
+    def test_cache_clear_index_page(self):
+        """"Очистка кэша на главной странице"""
+        cache_post = Post.objects.create(
+            text='test_cache',
+            author=self.user,
+        )
+        index = reverse('posts:index')
+        cache_1 = self.guest_client.get(index).content
+        cache_post.delete()
         cache.clear()
-        self.assertNotEqual(
-            cache_2, self.guest_client.get('/').content
-        )
+        self.assertNotEqual(cache_1, self.guest_client.get(index).content)
 
     def test_follow(self):
         """"Проверка подписки на автора"""
@@ -230,6 +239,15 @@ class PostsPagesTest(PostCreateModule):
                 author=self.user_2,
             ).exists()
         )
+
+    def test_double_follow(self):
+        """"Проверка проверка на повторную подписку"""
+        Follow.objects.create(
+            user=self.user,
+            author=self.user_2,
+        )
+        with self.assertRaises(IntegrityError):
+            Follow.objects.create(user=self.user, author=self.user_2)
 
     def test_unfollow(self):
         """"Проверка отписки от автора"""
