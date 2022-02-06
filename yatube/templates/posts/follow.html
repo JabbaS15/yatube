@@ -4,7 +4,8 @@
 {% block content %}
   <div class="container py-5">
     {% include 'includes/switcher.html' %}
-    <h1>Ваши подписки:</h1>
+    <h1>Ваши подписки</h1>
+    <br>
     {% for post in page_obj %}
       {% include 'includes/post_block.html' %}
     {% endfor %}
