@@ -7,20 +7,21 @@
 
 ## Инструкция по развёртыванию:
 1. Загрузите проект:
-```
+```bash
 git clone https://github.com/JabbaS15/yatube.git
 ```
 2. Установите и активируйте виртуальное окружение:
-```
+```bash
 python -m venv venv
 source venv/Scripts/activate
+python3 -m pip install --upgrade pip
 ```
 3. Установите зависимости:
-```
+```bash
 pip install -r requirements.txt
 ```
 4. В папке с файлом manage.py выполните команду запуска:
-```
+```bash
 python3 manage.py runserver
 ```
 
