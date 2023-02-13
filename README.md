@@ -9,7 +9,7 @@
 
 1. Загрузите проект.
 ```
-https://github.com/JabbaS15/yatube.git
+git clone https://github.com/JabbaS15/yatube.git
 ```
 2. Установите и активируйте виртуальное окружение.
 ```
