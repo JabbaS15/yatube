@@ -1,6 +1,6 @@
 # Yatube - Социальная сеть для блогеров.
-[![Python](https://img.shields.io/badge/-Python-464646?style=flat&logo=Python&logoColor=ffffff&color=013220)](https://www.python.org/)
-[![Django](https://img.shields.io/badge/-Django-464646?style=flat&logo=Django&logoColor=ffffff&color=013220)](https://www.djangoproject.com/)
+[![Python](https://img.shields.io/badge/-Python_3.10-464646?style=flat&logo=Python&logoColor=ffffff&color=013220)](https://www.python.org/)
+[![Django](https://img.shields.io/badge/-Django_2.2.19-464646?style=flat&logo=Django&logoColor=ffffff&color=013220)](https://www.djangoproject.com/)
 
 ## Описание проекта:
 Сервис для блогеров, позволяет пользователям публикацию постов с изображениями, распределение постов по группам, имеются личные страницы пользователей со стеной, подписка на авторов и комментирование записей. Работает Кэш, имеется покрытие тестами и настроена админ панель.
